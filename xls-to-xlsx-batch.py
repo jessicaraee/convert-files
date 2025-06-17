@@ -3,6 +3,7 @@
 import os
 import pandas as pd
 
+#Configure files
 INPUT_FOLDER = 'INPUT FOLDER' #Update to filepath and name
 OUTPUT_FOLDER = os.path.join(source_folder, 'Converted') #Update to desired new folder name
 
