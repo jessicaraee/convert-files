@@ -4,8 +4,8 @@ import pandas as pd
 import os
 
 #Configure files
-INPUT_FOLDER = 'LOCATION/INPUT FOLDER' #Update to filepath and name
-OUTPUT_FILE = 'LOCATION/OUTPUT FILE.xlsx' #Update to desired filepath and name
+INPUT_FOLDER = "/filepath/input_folder"  #Update with filepath and name 
+OUTPUT_FILE = "/filepath/output_file.xlsx" #Update with desired filepath and name
 
 row_counts = []
 
