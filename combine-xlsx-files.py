@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 #Configure files
-INPUT_FOLDER = "/filepath/input_folder"  #Update with filepath and name 
+INPUT_FOLDER = "/filepath/input_folder" #Update with filepath and name 
 OUTPUT_FILE = "/filepath/output_file.xlsx" #Update with desired filepath and name
 LOG_FILE = "/filepath/log_file.txt" #Update with desired filepath and name
 FILENAME_SLICE = slice(0, 25)  #Change if needed to extract part of filename
