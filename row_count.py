@@ -4,8 +4,8 @@ import pandas as pd
 import os
 
 #Configure files
-INPUT_FOLDER = "/filepath/input_folder" #Update with filepath and name 
-OUTPUT_FILE = "/filepath/output_file.xlsx" #Update with desired filepath and name
+INPUT_FOLDER = "/FILEPATH/INPUTFOLDER"
+OUTPUT_FILE = "/FILEPATH/OUTPUTFILE.xlsx"
 
 row_counts = []
 
@@ -25,4 +25,4 @@ for filename in os.listdir(INPUT_FOLDER):
 summary_df = pd.DataFrame(row_counts)
 summary_df.to_excel(OUTPUT_FILE, index=False)
 
-print(f"Row counts saved to: {OUTPUT_FILE}")
+print(f"Row counts saved to {OUTPUT_FILE}")
