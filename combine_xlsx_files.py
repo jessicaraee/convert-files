@@ -51,4 +51,4 @@ if log_lines:
         log.write("\n".join(log_lines))
     print(f"Log report saved to {LOG_FILE}")
 else:
-    print("No issues to log.")
+    print("No issues!")
