@@ -2,41 +2,72 @@
 
 import os
 import pandas as pd
+import csv
 
 #Configure files
-INPUT_FOLDER = "/filepath/input_folder" #Update with filepath and name 
-OUTPUT_FILE = "/filepath/output_file.xlsx" #Update with desired filepath and name
+INPUT_FOLDER = '/FILEPATH/INPUTFOLDER'
+OUTPUT_FOLDER = '/FILEPATH/OUTPUTFOLDER'
+OUTPUT_FILE = '/FILEPATH/OUTPUTFILE.xlsx'
 
-def convert_xls_to_xlsx(INPUT_FOLDER, OUTPUT_FOLDER):
-    #Create output folder
-    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-    # List all .xls files in the directory
-    xls_files = [f for f in os.listdir(INPUT_FOLDER) if f.endswith('.xls') and not f.startswith('~$')]
-    
-    if not xls_files:
-        print("No .xls files found.")
-        return
+#Find all .xls files and convert to .xlsx
+files = [
+    f for f in os.listdir(INPUT_FOLDER)
+    if f.lower().endswith(('.xls', '.xlsx')) and not f.startswith('~$')
+]
 
-    for file in xls_files:
-        xls_path = os.path.join(INPUT_FOLDER, file)
-        xlsx_filename = file.replace('.xls', '.xlsx')
-        xlsx_path = os.path.join(OUTPUT_FOLDER, xlsx_filename)
+if not files:
+    print("No .xls files found.")
+else:
+    failed_files = []
+
+    for file in files:
+        input_path = os.path.join(INPUT_FOLDER, file)
+        output_filename = os.path.splitext(file)[0] + '.xlsx'
+        output_path = os.path.join(OUTPUT_FOLDER, output_filename)
 
         try:
-            # Read and convert
-            df = pd.read_excel(xls_path, engine='xlrd')
-            df.to_excel(xlsx_path, index=False, engine='openpyxl')
-            print(f"Converted: {file} → {xlsx_filename}")
+            try:
+                df = pd.read_excel(input_path)
+            except Exception:
+                with open(input_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    sample = f.read(2048)
+                    f.seek(0)
+                    dialect = csv.Sniffer().sniff(sample)
+                    df = pd.read_csv(f, sep=dialect.delimiter)
+
+            df.to_excel(output_path, index=False, engine='openpyxl')
+            print(f"Converted {file} → {output_filename}")
+
         except Exception as e:
-            print(f"Failed to convert {file}: {e}")
+            print(f"Could not convert {file}: {e}")
+            failed_files.append((file, str(e)))
 
-if __name__ == "__main__":  
-    if os.path.isdir(INPUT_FOLDER):
-        convert_xls_to_xlsx(SOURCE_FOLDER, OUTPUT_FOLDER)
-        print(f"\nConverted files saved in: {OUTPUT_FOLDER}.")
+    if failed_files:
+        print("\nSome files could not be converted:")
+        for f, err in failed_files:
+            print(f"- {f}: {err}")
 
-        #Open the output folder
-        os.system(f'open "{OUTPUT_FOLDER}"')
-    else:
-        print("Invalid folder path.")
+    print(f"\nConverted files saved in {OUTPUT_FOLDER}")
+    os.system(f'open "{OUTPUT_FOLDER}"')
+
+#Export a list counting the rows in each file created above to verify files converted correctly
+row_counts = []
+
+for filename in os.listdir(OUTPUT_FOLDER):
+    if filename.endswith(".xlsx") and not filename.startswith("~$"):
+        filepath = os.path.join(OUTPUT_FOLDER, filename)
+        try:
+            df = pd.read_excel(filepath, engine='openpyxl')
+
+            data_rows = df.shape[0]
+            row_counts.append({"File Name": filename, "Row Count": data_rows})
+
+        except Exception as e:
+            row_counts.append({"File Name": filename, "Row Count": f"ERROR: {e}"})
+
+summary_df = pd.DataFrame(row_counts)
+summary_df.to_excel(OUTPUT_FILE, index=False)
+print(f"Row counts saved to {OUTPUT_FILE}")
+print(summary_df)
